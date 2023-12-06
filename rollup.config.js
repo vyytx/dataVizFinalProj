@@ -2,12 +2,16 @@ import nodeResolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import babel from '@rollup/plugin-babel'
 import replace from '@rollup/plugin-replace'
-import css from "rollup-plugin-css-only"
+//import css from "rollup-plugin-css-only"
+import postcss from 'rollup-plugin-postcss'
 import typescript from '@rollup/plugin-typescript'
 import json from '@rollup/plugin-json'
 import dsv from '@rollup/plugin-dsv'
 
 import { ChildProcess, spawn } from 'child_process'
+
+import tailwindcss from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
 
 import tsconfigJSON from './tsconfig.json' assert { type: 'json' }
 const isDev = process.env.ROLLUP_WATCH;
@@ -23,9 +27,9 @@ export default {
 		inlineDynamicImports: true
 	},
 	plugins: [
-		css({
-			output: "bundle.css"
-		}),
+		//css({
+		//	output: "bundle.css"
+		//}),
 		nodeResolve({
 			browser: true,
 			dedupe: ['react', 'react-dom'],
@@ -36,6 +40,13 @@ export default {
 			babelHelpers: 'bundled',
 			presets: ['@babel/preset-react', '@babel/preset-typescript'],
 			extensions: ['.ts', '.tsx']
+		}),
+		postcss({
+			plugins: [
+				tailwindcss('./tailwind.config.js'),
+				autoprefixer(),
+			],
+			extensions: ['.css'],
 		}),
 		commonjs(),
 		json({
