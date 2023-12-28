@@ -10,6 +10,13 @@ WEATHER_DATA_PATH = './data/weather.json'
 RAINFALL_DATA_PATH = './data/rainfall.json'
 DATE_FORMAT = '%Y-%m-%d %H'
 
+def fetch_all():
+	"""
+    Fetch weather and rainfall data from [Open Weather Data](https://opendata.cwa.gov.tw/) into json files.
+    """
+	fetch_weather()
+	fetch_rainfall()
+
 def fetch_weather():
 	# Check if the data is already fetched today
 	try:
@@ -63,6 +70,3 @@ def fetch_rainfall():
 			json.dump(json_data, json_file, indent=2)
 	else:
 		print('Error when requesting rainfall data')
-
-fetch_weather()
-fetch_rainfall()

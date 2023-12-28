@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
   </head>
@@ -23,9 +23,9 @@
 				  <i class="fa-solid fa-bars"></i>
 				</button>
 			</div>
-			<div id="mobile-menu" class="md:block flex flex-col items-center justify-center md:flex-row md:justify-start  md:space-x-4 pb-4 md:py-4 w-full">
-				<a href="#" class="bg-zinc-500 text-white text-center md:rounded-md w-full md:w-fit md:px-3 py-2 text-md font-medium focus:ring-2 focus:ring-slate-300">氣溫</a>
-				<a href="#" class="text-white text-center hover:bg-zinc-400 md:rounded-md w-full md:w-fit md:px-3 py-2 text-md font-medium focus:ring-2 focus:ring-slate-300">雨量</a>
+			<div id="menu" class="md:block flex flex-col items-center justify-center md:flex-row md:justify-start  md:space-x-4 pb-4 md:py-4 w-full">
+				<a href="/" class="{{ 'bg-zinc-500' if request.path == '/' }} text-white text-center md:rounded-md w-full md:w-fit md:px-3 py-2 text-md font-medium focus:ring-2 focus:ring-slate-300">氣溫</a>
+				<a href="/rainfall" class="{{ 'bg-zinc-500' if request.path == '/rainfall' }} text-white text-center hover:bg-zinc-400 md:rounded-md w-full md:w-fit md:px-3 py-2 text-md font-medium focus:ring-2 focus:ring-slate-300">雨量</a>
 				<a href="#" class="text-white text-center hover:bg-zinc-400 md:rounded-md w-full md:w-fit md:px-3 py-2 text-md font-medium focus:ring-2 focus:ring-slate-300">風速</a>
 			</div>
           </div>
@@ -45,20 +45,19 @@
     }
 
 		const toggleMenu = () => {
-			const menu = document.getElementById('mobile-menu')
+			const menu = document.getElementById('menu')
 			menu.classList.toggle('hidden')
 		}
 
-    const county_mean_temp_json = '{{ county_mean_temperature | tojson | safe }}';
-    const county_mean_temp = JSON.parse(county_mean_temp_json.slice(1,-1))
-    console.log(county_mean_temp)
-
+    const trace_data_json = '{{ trace_data | tojson | safe }}';
+    const trace_data = JSON.parse(trace_data_json.slice(1,-1))
+    console.log(trace_data)
     const data = [{
       type: "choroplethmapbox", 
       name: "Taiwan", 
       geojson: "{{ url_for('static', filename='counties.json') }}", 
-      locations: unpack(county_mean_temp, 'countyName'),
-      z: unpack(county_mean_temp, 'meanTemperature')
+      locations: unpack(trace_data, 'location'),
+      z: unpack(trace_data, 'z')
     }]
     const layout = {
       mapbox: {

@@ -9,27 +9,41 @@ def get_county_mean_rainfall():
 		with open(RAINFALL_DATA_PATH, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			df = pd.json_normalize(json_data, 'data')
-			print(df.groupby('GeoInfo.CountyName')['RainfallElement.Now.Precipitation'].mean())
+			result_list = (
+				df[~df['RainfallElement.Now.Precipitation'].isin([-99, -98, 'X', 'T'])]
+					.groupby('GeoInfo.CountyName')['RainfallElement.Now.Precipitation']
+					.mean()
+					.reset_index()
+					.rename(columns={
+						'GeoInfo.CountyName': 'location', 
+						'RainfallElement.Now.Precipitation': 'z'
+					})
+					.to_dict(orient='records')
+			)
+			result_json = json.dumps(result_list, ensure_ascii=False)
+				
 	except FileNotFoundError:
 		print('Rainfall data not found')
 		return
-	return 
+	return result_json
 
 def get_county_mean_temperature():
 	try:
 		with open(WEATHER_DATA_PATH, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			df = pd.json_normalize(json_data, 'data')
-			filtered_df = df[df['WeatherElement.AirTemperature'] != -99]
-			result_list = (filtered_df.groupby('GeoInfo.CountyName')['WeatherElement.AirTemperature']
-                .mean()
-				.round(1)
-                .reset_index()
-            	.rename(columns={
-					'GeoInfo.CountyName': 'countyName', 
-					'WeatherElement.AirTemperature': 'meanTemperature'
-				})
-                .to_dict(orient='records'))
+			result_list = (
+				df[df['WeatherElement.AirTemperature'] != -99]
+					.groupby('GeoInfo.CountyName')['WeatherElement.AirTemperature']
+					.mean()
+					.round(1)
+					.reset_index()
+					.rename(columns={
+						'GeoInfo.CountyName': 'location', 
+						'WeatherElement.AirTemperature': 'z'
+					})
+					.to_dict(orient='records')
+			)
 
 			result_json = json.dumps(result_list, ensure_ascii=False)
 	except FileNotFoundError:
