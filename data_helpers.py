@@ -21,11 +21,18 @@ def get_county_mean_temperature():
 			json_data = json.load(json_file)
 			df = pd.json_normalize(json_data, 'data')
 			filtered_df = df[df['WeatherElement.AirTemperature'] != -99]
-			print(filtered_df.groupby('GeoInfo.CountyName')['WeatherElement.AirTemperature'].mean())
+			result_list = (filtered_df.groupby('GeoInfo.CountyName')['WeatherElement.AirTemperature']
+                .mean()
+				.round(1)
+                .reset_index()
+            	.rename(columns={
+					'GeoInfo.CountyName': 'countyName', 
+					'WeatherElement.AirTemperature': 'meanTemperature'
+				})
+                .to_dict(orient='records'))
+
+			result_json = json.dumps(result_list, separators=(',', ':'), ensure_ascii=False)
 	except FileNotFoundError:
 		print('Weather data not found')
 		return
-	return 
-
-get_county_mean_rainfall()
-get_county_mean_temperature()
+	return result_json

@@ -38,24 +38,41 @@
       </main>
     </div>
 	<script>
+    const unpack = (rows, key) => {
+      return rows.map(function (row) {
+          return row[key]
+      })
+    }
+
 		const toggleMenu = () => {
 			const menu = document.getElementById('mobile-menu')
 			menu.classList.toggle('hidden')
 		}
-    var data = [{
-      type: 'choroplethmapbox', locations: [], z: [],
-      geojson: "{{ url_for('static', filename='counties.json') }}"
-    }];
 
-    var layout = {
-        mapbox: {
-            style: 'white-bg',
-            zoom: 3.5
-        },   
-        width: 600, 
-        height:400
+    const county_mean_temperature_json = '{{ county_mean_temperature | tojson | safe }}';
+    console.log(county_mean_temperature_json)
+    const county_mean_temperature = JSON.parse(county_mean_temperature_json);
+
+    console.log(county_mean_temperature)
+
+    const data = [{
+      type: "choroplethmapbox", 
+      name: "Taiwan", 
+      geojson: "{{ url_for('static', filename='counties.json') }}", 
+      locations: unpack(county_mean_temperature, 'countyName'),
+      z: unpack(county_mean_temperature, 'meanTemperature')
+    }]
+    const layout = {
+      mapbox: {
+        style: "white-bg", 
+        center: {lon: 120.9738819, lat: 23.97565}, 
+        zoom: 5
+      }, 
+      width: 600, 
+      height: 400, 
+      margin: {t: 0, b: 0}
     };
-    Plotly.newPlot('myDiv', data, layout);
+    Plotly.newPlot('myDiv', data, layout)
 	</script>
 	<script src="{{ url_for('static', filename='js/main.js') }}"></script>
   </body>
