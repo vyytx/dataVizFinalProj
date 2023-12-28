@@ -31,7 +31,7 @@ def get_county_mean_temperature():
 				})
                 .to_dict(orient='records'))
 
-			result_json = json.dumps(result_list, separators=(',', ':'), ensure_ascii=False)
+			result_json = json.dumps(result_list, ensure_ascii=False)
 	except FileNotFoundError:
 		print('Weather data not found')
 		return

@@ -49,24 +49,22 @@
 			menu.classList.toggle('hidden')
 		}
 
-    const county_mean_temperature_json = '{{ county_mean_temperature | tojson | safe }}';
-    console.log(county_mean_temperature_json)
-    const county_mean_temperature = JSON.parse(county_mean_temperature_json);
-
-    console.log(county_mean_temperature)
+    const county_mean_temp_json = '{{ county_mean_temperature | tojson | safe }}';
+    const county_mean_temp = JSON.parse(county_mean_temp_json.slice(1,-1))
+    console.log(county_mean_temp)
 
     const data = [{
       type: "choroplethmapbox", 
       name: "Taiwan", 
       geojson: "{{ url_for('static', filename='counties.json') }}", 
-      locations: unpack(county_mean_temperature, 'countyName'),
-      z: unpack(county_mean_temperature, 'meanTemperature')
+      locations: unpack(county_mean_temp, 'countyName'),
+      z: unpack(county_mean_temp, 'meanTemperature')
     }]
     const layout = {
       mapbox: {
         style: "white-bg", 
         center: {lon: 120.9738819, lat: 23.97565}, 
-        zoom: 5
+        zoom: 5.7
       }, 
       width: 600, 
       height: 400, 
