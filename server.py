@@ -9,14 +9,14 @@ app = Flask(__name__)
 def index():
 	return render_template(
 		'index.html',
-		trace_data = get_county_mean_temperature(),
+		chart_data = get_county_mean_temperature(),
 	)
 
 @app.route('/rainfall')
 def rainfall():
 	return render_template(
 		'index.html',
-		trace_data = get_county_mean_rainfall()
+		chart_data = get_county_mean_rainfall()
 	)
 
 if __name__ == '__main__':
