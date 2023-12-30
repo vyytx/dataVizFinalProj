@@ -1,8 +1,17 @@
 import json
 import pandas as pd
+from datetime import datetime, timedelta
 
 WEATHER_DATA_PATH = './data/weather.json'
 RAINFALL_DATA_PATH = './data/rainfall.json'
+WEATHER_FORECAST_DATA_PATH = './data/weather-forecast.json'
+
+def find_middle_time(time_str_1, time_str_2):
+	time_1 = datetime.strptime(time_str_1, "%Y-%m-%d %H:%M:%S")
+	time_2 = datetime.strptime(time_str_2, "%Y-%m-%d %H:%M:%S")
+	result = time_1 + (time_2 - time_1)/2 
+	return result.strftime("%Y-%m-%d %H:%M:%S")
+
 
 def get_county_mean_rainfall():
 	try:
@@ -46,6 +55,42 @@ def get_county_mean_temperature():
 			)
 
 			result_json = json.dumps(result_list, ensure_ascii=False)
+	except FileNotFoundError:
+		print('Weather data not found')
+		return
+	return result_json
+
+def get_county_temperature_extremum(location):
+	try:
+		with open(WEATHER_FORECAST_DATA_PATH, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			data_list = json_data['data']
+			for data in data_list:
+				if data['locationName'] == location:
+					minT_list = []
+					maxT_list = []
+					x_list = []
+					tick_list = []
+					for element in data['weatherElement']:
+						if element['elementName'] == 'MinT':
+							for i, time in enumerate(element['time']):
+								minT_list.append(time['parameter']['parameterName'])
+								x_list.append(find_middle_time(time['startTime'], time['endTime']))
+								tick_list.append(time['startTime'])
+								if i == 2:
+									tick_list.append(time['endTime'])
+						if element['elementName'] == 'MaxT':
+							for time in element['time']:
+								maxT_list.append(time['parameter']['parameterName'])
+					result = {
+						'MinT': minT_list,
+						'MaxT': maxT_list,
+						'x': x_list,
+						'ticks': tick_list
+					}
+
+
+			result_json = json.dumps(result, ensure_ascii=False)
 	except FileNotFoundError:
 		print('Weather data not found')
 		return
