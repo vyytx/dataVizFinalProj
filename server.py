@@ -6,6 +6,7 @@ from fetch import fetch_all
 app = Flask(__name__)
 
 @app.route('/')
+@app.route('/temperature')
 def index():
 	return render_template(
 		'index.html',
@@ -15,7 +16,7 @@ def index():
 @app.route('/rainfall')
 def rainfall():
 	return render_template(
-		'index.html',
+		'rainfall.html',
 		chart_data = get_county_mean_rainfall()
 	)
 

@@ -16,10 +16,19 @@ const choropleth = (chart_data, element) => {
         style: "white-bg", 
         center: {lon: 120.9738819, lat: 23.97565}, 
         zoom: 5.7
-      }, 
-      width: 600, 
-      height: 400, 
-      margin: {t: 0, b: 0}
+      },
+      showlegend: false,
+      margin: {t: 30, b: 10, l: 10, r:10},
     };
-    Plotly.newPlot(element, data, layout)
+    const config = {
+      responsive: true
+    }
+    Plotly.newPlot(element, data, layout, config)
+      // .then((chart) => {
+      //   chart.on('plotly_click', (data) => {
+      //     const countyName = data.points[0].location
+      //     window.location.assign(`/counties/${countyName}`)
+      //   })
+      // })
+    
 }
