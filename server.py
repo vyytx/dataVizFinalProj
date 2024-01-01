@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, redirect
 from data_helpers import get_county_mean_temperature, \
 						 get_county_mean_rainfall, \
 						 get_county_temperature_extremum
@@ -7,11 +7,21 @@ from fetch import fetch_all
 app = Flask(__name__)
 
 @app.route('/')
-@app.route('/temperature')
 def index():
+	return redirect('/temperature')
+
+@app.route('/temperature')
+def temperature():
 	return render_template(
-		'index.html',
+		'temperature.html',
 		chart_data = get_county_mean_temperature(),
+	)
+
+@app.route('/rainfall')
+def rainfall():
+	return render_template(
+		'rainfall.html',
+		chart_data = get_county_mean_rainfall()
 	)
 
 @app.route('/county/<string:countyName>')
@@ -22,12 +32,6 @@ def county(countyName):
 		temperature_forecast_data = get_county_temperature_extremum(countyName)
 	)
 
-@app.route('/rainfall')
-def rainfall():
-	return render_template(
-		'rainfall.html',
-		chart_data = get_county_mean_rainfall()
-	)
 
 if __name__ == '__main__':
 	fetch_all()
