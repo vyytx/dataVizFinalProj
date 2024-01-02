@@ -14,7 +14,7 @@ const choropleth = (chart_data, element, geojson_path) => {
     z: unpack(chart_data, 'z'),
   }]
   const layout = {
-    width: 500,
+    width: 550,
     mapbox: {
       style: 'white-bg',
       center: { lon: 120.9738819, lat: 23.97565 },
