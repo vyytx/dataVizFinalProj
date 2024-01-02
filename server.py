@@ -1,8 +1,6 @@
 from flask import Flask, render_template, jsonify, redirect
-from data_helpers import get_county_mean_temperature, \
-						 get_county_mean_rainfall, \
-						 get_county_temperature_extremum
 from fetch import fetch_all
+from data_helpers import *
 
 app = Flask(__name__)
 
@@ -29,6 +27,7 @@ def county(countyName):
 	return render_template(
 		'county.html',
 		location = countyName,
+		counties = get_counties(),
 		temperature_forecast_data = get_county_temperature_extremum(countyName)
 	)
 

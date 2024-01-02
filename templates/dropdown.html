@@ -1,0 +1,41 @@
+{% macro dropdownMenuItem(label) %}
+<li class="flex items-center justify-center hover:bg-gray-600 rounded px-4 py-2">
+  <a href="/county/{{ label }}">{{ label }}</a>
+</li>
+{% endmacro %}
+
+<div class="relative my-2">
+  <button
+    id="dropdownButton"
+    class="text-white bg-cyan-600 hover:bg-cyan-700 font-medium rounded-md text-md px-5 py-2.5 text-center inline-flex items-center"
+    type="button"
+    onclick="toggleDropdownButton()"
+  >
+    {{ location }}
+    <i class="fa-solid fa-chevron-down ml-2 text-sm"></i>
+  </button>
+
+  <div
+    id="dropdownList"
+    class="absolute hidden z-10 bg-white rounded-lg shadow w-60 dark:bg-gray-700 "
+  >
+    <div class="p-3">
+      <div class="relative">
+        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+          <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+        </div>
+        <input
+          type="text"
+          id="input-group-search"
+          class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          placeholder="Search county"
+        />
+      </div>
+    </div>
+    <ul class="px-3 pb-3 h-48 overflow-y-auto text-sm text-white">
+      {% for county in counties %}
+        {{ dropdownMenuItem(county) }}
+      {% endfor %}
+    </ul>
+  </div>
+</div>
