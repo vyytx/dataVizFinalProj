@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 import statistics as st
 
 WEATHER_DATA_PATH = './data/weather.json'
@@ -110,10 +110,8 @@ def get_county_information(location):
 			humidity_list = []
 			pressure_list = []
 			windspeed_list = []
-			weather_list = []
 			for data in data_list:
 				if data['GeoInfo']['CountyName'] == location:
-					weather_list.append(data['WeatherElement']['Weather'])
 					if(data['WeatherElement']['AirTemperature']!= -99):
 						temperature_list.append(data['WeatherElement']['AirTemperature'])
 					if(data['WeatherElement']['RelativeHumidity']!= -99):
@@ -123,17 +121,16 @@ def get_county_information(location):
 					if(data['WeatherElement']['WindSpeed']!= -99):
 						windspeed_list.append(data['WeatherElement']['WindSpeed'])
 			result = {
-				'weather': max(weather_list, key=weather_list.count),
 				'temperature': round(st.mean(temperature_list), 2),
 				'pressure': round(st.mean(pressure_list), 2),
 				'windspeed': round(st.mean(windspeed_list), 2),
 				'humidity': round(st.mean(humidity_list), 2),
 			}
-			result_json = json.dumps(result, ensure_ascii=False)
+			print(result)
 	except FileNotFoundError:
 		print('Weather data not found')
 		return
-	return result_json
+	return result
 
 def get_county_mean_windspeed():
 	try:
