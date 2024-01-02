@@ -1,7 +1,7 @@
 {% macro menuItem(url, label) %}
   {% set path_parts = request.path.split('/') %}
   {% set url_parts = url.split('/') %}
-  <a href="{{ url }}" class="{{ 'bg-zinc-500' if path_parts[1] == url_parts[1] }} text-white text-center hover:bg-zinc-400 md:rounded-md w-full md:w-fit md:px-3 py-2 text-lg font-medium focus:ring-2 focus:ring-slate-300">{{ label }}</a>
+  <a href="{{ url }}" class="{{ 'bg-zinc-500' if path_parts[1] == url_parts[1] }} text-white text-center hover:bg-zinc-400 md:rounded-md w-full md:w-fit md:px-3 py-2 text-md lg:text-lg font-medium focus:ring-2 focus:ring-slate-300">{{ label }}</a>
 {% endmacro %}
 
 <nav class="bg-zinc-700">
@@ -16,7 +16,7 @@
             <i class="fa-solid fa-bars"></i>
           </button>
       </div>
-      <div id="menu" class="hidden md:flex flex-col items-center justify-center md:flex-row md:justify-start  md:space-x-4 pb-4 md:py-4 w-full">
+      <div id="menu" class="hidden flex md:flex flex-col items-center justify-center md:flex-row md:justify-start  md:space-x-4 pb-4 md:py-4 w-full">
         {{ menuItem('/temperature', '氣溫') }}
         {{ menuItem('/rainfall/Now', '雨量') }}
         {{ menuItem('/windspeed', '風速') }}
