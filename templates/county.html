@@ -16,7 +16,7 @@
     <div id="chart" class="max-w-[500px]"></div>
   </div>
   <div class="p-2 bg-white rounded-md w-fit">
-    <div id="fart" class="max-w-[500px]"></div>
+    <div id="table" class="max-w-[500px]"></div>
   </div>
 </div>
 {% endblock %}
@@ -30,6 +30,6 @@
     const county_information_data_json = '{{ county_information_data | tojson | safe }}'
     const county_information_data= JSON.parse(county_information_data_json.slice(1,-1))
     temperature_forecast_scatter(temp_forecast_data, 'chart')
-    information_table(county_information_data ,'fart')
+    information_table(county_information_data ,'table')
   </script>
 {% endblock %}
