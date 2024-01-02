@@ -36,33 +36,28 @@ const choropleth = (chart_data, element, geojson_path) => {
 
 }
 
-const temperature_forecast_scatter = (chart_data, element) => {
+const temperature_scatter = (forcast_data, history_data, element) => {
   const data = [
     {
       type: 'scatter',
       mode: 'lines+markers',
       name: '最低溫度',
-      x: chart_data['x'],
-      y: chart_data['MinT'],
-      hovertemplate: '%{y}°C'
+      x: history_data['x'].concat(forcast_data['x']),
+      y: history_data['MinT'].concat(forcast_data['MinT']),
+      hovertemplate: '%{x}   -   %{y}°C'
     },
     {
       type: 'scatter',
       mode: 'lines+markers',
       name: '最高溫度',
-      x: chart_data['x'],
-      y: chart_data['MaxT'],
-      hovertemplate: '%{y}°C',
+      x: history_data['x'].concat(forcast_data['x']),
+      y: history_data['MaxT'].concat(forcast_data['MaxT']),
+      hovertemplate: '%{x}   -   %{y}°C',
     },
   ]
 
   const layout = {
-    title: '未來 36 小時最高和最低溫度',
-    xaxis: {
-      tickmode: 'array',
-      tickvals: chart_data['ticks'],
-      range: [chart_data['ticks'][0], chart_data['ticks'][chart_data['ticks'].length - 1]]
-    },
+    title: '過去 7 天與未來 36 小時最高和最低溫度',
     margin: { t: 100 },
   };
   const config = {

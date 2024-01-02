@@ -6,6 +6,8 @@ import statistics as st
 WEATHER_DATA_PATH = './data/weather.json'
 RAINFALL_DATA_PATH = './data/rainfall.json'
 WEATHER_FORECAST_DATA_PATH = './data/weather-forecast.json'
+WEATHER_HISTORY_DATA_PATH = './data/weather-history.json'
+STATION_DATA_PATH = './data/station.json'
 
 def find_middle_time(time_str_1, time_str_2):
 	time_1 = datetime.strptime(time_str_1, "%Y-%m-%d %H:%M:%S")
@@ -65,6 +67,31 @@ def get_county_mean_temperature():
 		return
 	return result_json
 
+def get_county_mean_windspeed():
+	try:
+		with open(WEATHER_DATA_PATH, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			df = pd.json_normalize(json_data, 'data')
+			result_list = (
+				df[df['WeatherElement.WindSpeed'] != -99]
+					.groupby('GeoInfo.CountyName')['WeatherElement.WindSpeed']
+					.mean()
+					.round(1)
+					.reset_index()
+					.rename(columns={
+						'GeoInfo.CountyName': 'location', 
+						'WeatherElement.WindSpeed': 'z'
+					})
+					.to_dict(orient='records')
+			)
+
+			result_json = json.dumps(result_list, ensure_ascii=False)
+	except FileNotFoundError:
+		print('Weather data not found')
+		return
+	return result_json
+
+
 def get_county_temperature_extremum(location):
 	try:
 		with open(WEATHER_FORECAST_DATA_PATH, 'r', encoding='utf-8') as json_file:
@@ -101,6 +128,58 @@ def get_county_temperature_extremum(location):
 		return
 	return result_json
 
+def get_county_temperature_history(location):
+	try:
+		with open(WEATHER_HISTORY_DATA_PATH, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			data_list = json_data['data']
+			daily_list_list = []
+			for data in data_list:
+				county = get_station_county(data['station']['StationID'])
+				if county == location:
+					daily_list_list.append(data['stationObsStatistics']['AirTemperature']['daily'])
+
+			organized = dict()
+			if len(daily_list_list):
+				for daily_list in daily_list_list:
+					for day in daily_list[-7:]:
+						organized.setdefault(day['Date'], {
+							'Date': day['Date'],
+							'Maximum': 0,
+							'Minimum': 0
+						})
+						organized[day['Date']]['Maximum'] += float(day['Maximum'])
+						organized[day['Date']]['Minimum'] += float(day['Minimum'])
+				for day in daily_list_list[0][-7:]:
+					organized[day['Date']]['Maximum'] /= len(daily_list_list)
+					organized[day['Date']]['Minimum'] /= len(daily_list_list)
+			
+			result_dict = {
+				"x": [date+" 00:00:00" for date in organized],
+				"MaxT": [day['Maximum'] for day in organized.values()],
+				"MinT": [day['Minimum'] for day in organized.values()],
+			}
+
+			result_json = json.dumps(result_dict, ensure_ascii=False)
+	except FileNotFoundError:
+		print('Weather data not found')
+		return
+	return result_json
+
+def get_station_county(stationID):
+	try:
+		with open(STATION_DATA_PATH, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			data_list = json_data['data']
+			for data in data_list:
+				if data['StationID'] == stationID:
+					county = data['CountyName']
+					break
+	except FileNotFoundError:
+		print('Weather data not found')
+		return
+	return county
+
 def get_county_information(location):
 	try:
 		with open(WEATHER_DATA_PATH, 'r', encoding='utf-8') as json_file:
@@ -131,30 +210,6 @@ def get_county_information(location):
 		print('Weather data not found')
 		return
 	return result
-
-def get_county_mean_windspeed():
-	try:
-		with open(WEATHER_DATA_PATH, 'r', encoding='utf-8') as json_file:
-			json_data = json.load(json_file)
-			df = pd.json_normalize(json_data, 'data')
-			result_list = (
-				df[df['WeatherElement.WindSpeed'] != -99]
-					.groupby('GeoInfo.CountyName')['WeatherElement.WindSpeed']
-					.mean()
-					.round(1)
-					.reset_index()
-					.rename(columns={
-						'GeoInfo.CountyName': 'location', 
-						'WeatherElement.WindSpeed': 'z'
-					})
-					.to_dict(orient='records')
-			)
-
-			result_json = json.dumps(result_list, ensure_ascii=False)
-	except FileNotFoundError:
-		print('Weather data not found')
-		return
-	return result_json
 
 def get_counties():
 	counties = ['臺北市', '新北市', '桃園市', '臺中市', '臺南市', '高雄市', '新竹縣', '苗栗縣', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '屏東縣', '宜蘭縣', '花蓮縣', '臺東縣', '澎湖縣', '金門縣', '連江縣', '基隆市', '新竹市', '嘉義市']

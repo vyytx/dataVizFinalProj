@@ -63,6 +63,9 @@
 <script>
   const temp_forecast_data_json = '{{ temperature_forecast_data | tojson | safe }}'
   const temp_forecast_data = JSON.parse(temp_forecast_data_json.slice(1, -1))
-  temperature_forecast_scatter(temp_forecast_data, 'chart')
+  const temp_history_data_json = '{{ temperature_history_data | tojson | safe }}'
+  const temp_history_data = JSON.parse(temp_history_data_json.slice(1, -1))
+  console.log(temp_forecast_data, temp_history_data)
+  temperature_scatter(temp_forecast_data, temp_history_data, 'chart')
 </script>
 {% endblock %}
