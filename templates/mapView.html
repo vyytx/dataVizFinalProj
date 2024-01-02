@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+	<div id="mapPlot" class="min-h-full"></div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+<script>
+	const JSONnormalize = (str) => JSON.parse(str.slice(1, -1));
+	const getChartData = () => nowPage == 'temp' ? tempMean :
+								nowPage == 'rain' ? rainMean :
+								nowPage == 'wind' ? windMean : undefined;
+
+	const tempMean = JSONnormalize('{{ mean_temp | tojson | safe }}')
+	const rainMean = JSONnormalize('{{ mean_rain | tojson | safe }}')
+	const windMean = JSONnormalize('{{ mean_wind | tojson | safe }}')
+
+	let chart_data = getChartData()
+
+	drawMap(chart_data)
+</script>
+{% endblock %}

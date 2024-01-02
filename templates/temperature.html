@@ -4,16 +4,9 @@
 各縣市當前平均溫度
 {% endblock %}
 
-{% block content %}
-<div class="p-2 bg-white rounded-md w-fit">
-  <div id="chart" class="max-w-[600px]"></div>
-</div>
-{% endblock %}
-
 {% block script %}
-<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
 <script>
-  const chart_data_json = '{{ chart_data | tojson | safe }}';
+  const chart_data_json = '{{ temp_data }}';
   const chart_data = JSON.parse(chart_data_json.slice(1,-1))
 
   choropleth(chart_data, 'chart')
