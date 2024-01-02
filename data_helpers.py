@@ -9,6 +9,7 @@ WEATHER_FORECAST_DATA_PATH = './data/weather-forecast.json'
 MONTHLY_AVERAGE_DATA_PATH = './data/monthly-average.json'
 MANNED_STATION_INFORMATION = './data/manned-station-information.json'
 UNMANNED_STATION_INFORMATION = './data/unmanned-station-information.json'
+OBS_RECORD_30DAYS = './data/obs-record-30days.json'
 
 def find_middle_time(time_str_1, time_str_2):
 	time_1 = datetime.strptime(time_str_1, "%Y-%m-%d %H:%M:%S")
@@ -197,7 +198,7 @@ def get_unnmanned_station_information():
 		return
 	return result
 
-def get_nmanned_station_information():
+def get_manned_station_information():
 	try:
 		with open(MANNED_STATION_INFORMATION, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
@@ -208,3 +209,50 @@ def get_nmanned_station_information():
 		print('Unmanned station information data not found')
 		return
 	return result
+
+def get_county_mean_temperature_in_past_30days():
+	station_dict = get_manned_station_information()
+	try:
+		with open(OBS_RECORD_30DAYS, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			station_list = json_data['data']
+			result_list = []
+			for station in station_list:
+				station_id = station['station']['StationID']
+				df = pd.json_normalize(station, ['stationObsTimes', 'stationObsTime'])
+				df['DateTime'] = df['DateTime'].str.replace("24:00:00", "00:00:00")
+				df['DateTime'] = pd.to_datetime(df['DateTime'])
+				df['weatherElements.AirTemperature'] = pd.to_numeric(df['weatherElements.AirTemperature'], errors='coerce')
+				result = (
+					df.groupby([df['DateTime'].dt.date])['weatherElements.AirTemperature']
+						.mean()
+						.reset_index()
+						.rename(columns={
+							'DateTime': 'date', 
+							'weatherElements.AirTemperature': 'temperature'
+						})
+				)
+				result['date'] = result['date'].apply(lambda x: x.strftime('%Y-%m-%d'))
+				result['countyName'] = station_dict[station_id]
+				result_list.append(result)
+			
+			result = pd.concat(result_list, ignore_index=True)
+			result_avg = (
+				result.groupby(['countyName', 'date'])['temperature']
+				.mean()
+				.round(1)
+				.reset_index()
+			)
+			result_grouped = (
+				result_avg.groupby('countyName')[['date', 'temperature']]
+					.apply(lambda x: x.to_dict(orient='records'))
+					.reset_index(name='data')
+					.to_dict(orient='records')
+			)
+			result_json = json.dumps(result_grouped, ensure_ascii=False)
+			print(result_json)
+
+	except FileNotFoundError:
+		print('30 days data not found')
+		return
+	return result_json

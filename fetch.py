@@ -11,6 +11,7 @@ RAINFALL_DATA_PATH = './data/rainfall.json'
 WEATHER_FORECAST_DATA_PATH = './data/weather-forecast.json'
 MANNED_STATION_INFORMATION = './data/manned-station-information.json'
 UNMANNED_STATION_INFORMATION = './data/unmanned-station-information.json'
+OBS_RECORD_30DAYS = './data/obs-record-30days.json'
 DATE_FORMAT = '%Y-%m-%d %H'
 
 def fetch_all():
@@ -22,6 +23,7 @@ def fetch_all():
 	fetch_weather_forecast()
 	fetch_manned_station_information()
 	fetch_unmanned_station_information()
+	fetch_obs_record_30days() # Need some time to fetch
 
 def fetch_weather():
 	# Check if the data is already fetched today
@@ -29,7 +31,7 @@ def fetch_weather():
 		with open(WEATHER_DATA_PATH, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			if json_data['date'] == datetime.now().strftime(DATE_FORMAT):
-				print('Weather data is up to date')
+				print('Weather data is already up to date')
 				return
 	except FileNotFoundError:
 		pass
@@ -57,7 +59,7 @@ def fetch_rainfall():
 		with open(RAINFALL_DATA_PATH, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			if json_data['date'] == datetime.now().strftime(DATE_FORMAT):
-				print('Rainfall data is up to date')
+				print('Rainfall data is already up to date')
 				return
 	except FileNotFoundError:
 		pass
@@ -83,7 +85,7 @@ def fetch_weather_forecast():
 		with open(WEATHER_FORECAST_DATA_PATH, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			if json_data['date'] == datetime.now().strftime(DATE_FORMAT):
-				print('Weather forecast data is up to date')
+				print('Weather forecast data is already up to date')
 				return
 	except FileNotFoundError:
 		pass
@@ -109,7 +111,7 @@ def fetch_manned_station_information():
 		with open(MANNED_STATION_INFORMATION, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			if json_data['date'] == datetime.now().strftime(DATE_FORMAT):
-				print('Manned station information data is up to date')
+				print('Manned station information data is already up to date')
 				return
 	except FileNotFoundError:
 		pass
@@ -135,7 +137,7 @@ def fetch_unmanned_station_information():
 		with open(UNMANNED_STATION_INFORMATION, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			if json_data['date'] == datetime.now().strftime(DATE_FORMAT):
-				print('Unmanned station information data is up to date')
+				print('Unmanned station information data is already up to date')
 				return
 	except FileNotFoundError:
 		pass
@@ -155,3 +157,28 @@ def fetch_unmanned_station_information():
 			json.dump(json_data, json_file, indent=2)
 	else:
 		print('Error when requesting unmanned station information data')
+
+def fetch_obs_record_30days():
+	try:
+		with open(OBS_RECORD_30DAYS, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			if json_data['date'] == datetime.now().strftime(DATE_FORMAT):
+				print('30 days data is already up to date')
+				return
+	except FileNotFoundError:
+		pass
+
+	url = 'https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/C-B0024-001?downloadType=WEB&format=JSON'
+	headers = {'Authorization': os.getenv('API_KEY')}
+	res = req.get(url, headers=headers)
+
+	if res.status_code == 200:
+		data = res.json()
+		json_data = {
+			'date': datetime.now().strftime(DATE_FORMAT),
+			'data': data['cwaopendata']['resources']['resource']['data']['surfaceObs']['location']
+		}
+		with open(OBS_RECORD_30DAYS, 'w', encoding='utf-8') as json_file:
+			json.dump(json_data, json_file, indent=2)
+	else:
+		print('Error when requesting 30days data')
