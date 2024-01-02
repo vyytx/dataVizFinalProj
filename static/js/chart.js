@@ -52,7 +52,7 @@ const temperature_forecast_scatter = (chart_data, element) => {
       name: '最高溫度',
       x: chart_data['x'],
       y: chart_data['MaxT'],
-      hovertemplate: '%{y}°C'
+      hovertemplate: '%{y}°C',
     },
   ]
 
@@ -60,7 +60,8 @@ const temperature_forecast_scatter = (chart_data, element) => {
     title: '未來 36 小時最高和最低溫度',
     xaxis: {
       tickmode: 'array',
-      tickvals: chart_data['ticks']
+      tickvals: chart_data['ticks'],
+      range: [chart_data['ticks'][0], chart_data['ticks'][chart_data['ticks'].length - 1]]
     },
     margin: { t: 100 },
   };
