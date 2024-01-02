@@ -170,7 +170,7 @@ def get_county_temperature_history(location):
 
 def get_station_county(stationID):
 	try:
-		with open(STATION_DATA_PATH, 'r', encoding='utf-8') as json_file:
+		with open(MANNED_STATION_INFORMATION, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			data_list = json_data['data']
 			for data in data_list:
