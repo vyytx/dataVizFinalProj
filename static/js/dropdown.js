@@ -16,12 +16,12 @@ document.documentElement.addEventListener('click', (event) => {
 
 dropdownSearch.addEventListener('input', () => {
     const inputText = dropdownSearch.value
-    const searchText = inputText.replace('台', '臺')
+    const searchText = inputText.replace('台', '臺').toLowerCase()
 
     const listItems = dropdownList.getElementsByTagName('li')
     for (const listItem of listItems) {
         const anchor = listItem.querySelector('a')
-        if (!anchor.innerText.includes(searchText)) {
+        if (!anchor.innerText.toLowerCase().includes(searchText)) {
           listItem.classList.add('hidden')
         } else {
           listItem.classList.remove('hidden')
