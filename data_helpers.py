@@ -13,19 +13,19 @@ def find_middle_time(time_str_1, time_str_2):
 	return result.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def get_county_mean_rainfall():
+def get_county_mean_rainfall(time_range):
 	try:
 		with open(RAINFALL_DATA_PATH, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			df = pd.json_normalize(json_data, 'data')
 			result_list = (
-				df[~df['RainfallElement.Now.Precipitation'].isin([-99, -98, 'X', 'T'])]
-					.groupby('GeoInfo.CountyName')['RainfallElement.Now.Precipitation']
+				df[~df[f'RainfallElement.{time_range}.Precipitation'].isin([-99, -98, 'X', 'T'])]
+					.groupby('GeoInfo.CountyName')[f'RainfallElement.{time_range}.Precipitation']
 					.mean()
 					.reset_index()
 					.rename(columns={
 						'GeoInfo.CountyName': 'location', 
-						'RainfallElement.Now.Precipitation': 'z'
+						f'RainfallElement.{time_range}.Precipitation': 'z'
 					})
 					.to_dict(orient='records')
 			)
@@ -35,6 +35,10 @@ def get_county_mean_rainfall():
 		print('Rainfall data not found')
 		return
 	return result_json
+
+def get_rainfall_time_range():
+	time_range = ['Now', 'Past10Min', 'Past1hr', 'Past3hr', 'Past6Hr', 'Past12hr', 'Past24hr', 'Past2days', 'Past3days']
+	return time_range
 
 def get_county_mean_temperature():
 	try:

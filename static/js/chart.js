@@ -3,11 +3,11 @@
  * @param {Array<{ z: number, location: string }>} chart_data 
  * @param {string} element 
  */
-const choropleth = (chart_data, element) => {
+const choropleth = (chart_data, element, geojson_path) => {
   const data = [{
     type: 'choroplethmapbox',
     name: 'Taiwan',
-    geojson: 'static/counties.json',
+    geojson: geojson_path,
     locations: unpack(chart_data, 'location'),
     z: unpack(chart_data, 'z'),
   }]

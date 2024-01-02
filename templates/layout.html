@@ -17,7 +17,10 @@
       {% include 'header.html' %}
       <main>
         <div class="mx-auto max-w-7xl py-12 sm:px-6 lg:px-8">
-          <h1 class="text-3xl text-white mb-8">{% block title %}Title{% endblock %}</h1>
+          <div class="flex items-center mb-8 space-x-4">
+            <h1 class="text-3xl text-white">{% block title %}Title{% endblock %}</h1>
+            {% block dropdown %}{% endblock %}
+          </div>
           {% block content %}{% endblock %}
         </div>
       </main>

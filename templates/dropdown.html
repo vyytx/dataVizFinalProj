@@ -1,6 +1,6 @@
-{% macro dropdownMenuItem(label) %}
+{% macro dropdownMenuItem(base_url, label) %}
 <li class="flex items-center justify-center hover:bg-gray-600 rounded px-4 py-2">
-  <a href="/county/{{ label }}">{{ label }}</a>
+  <a href="{{ base_url }}/{{ label }}">{{ label }}</a>
 </li>
 {% endmacro %}
 
@@ -10,7 +10,7 @@
     class="text-white bg-cyan-600 hover:bg-cyan-700 font-medium rounded-md text-md px-5 py-2.5 text-center inline-flex items-center"
     type="button"
   >
-    {{ location }}
+    {{ button_text }}
     <i class="fa-solid fa-chevron-down ml-2 text-sm"></i>
   </button>
 
@@ -32,8 +32,8 @@
       </div>
     </div>
     <ul id="dropdownList" class="px-3 pb-3 h-48 overflow-y-auto text-sm text-white">
-      {% for county in counties %}
-        {{ dropdownMenuItem(county) }}
+      {% for item in item_list %}
+        {{ dropdownMenuItem(base_url, item) }}
       {% endfor %}
     </ul>
   </div>

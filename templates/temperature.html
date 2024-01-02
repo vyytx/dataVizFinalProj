@@ -21,7 +21,7 @@
   const chart_data_json = '{{ chart_data | tojson | safe }}';
   const chart_data = JSON.parse(chart_data_json.slice(1,-1));
 
-  choropleth(chart_data, 'choropleth-chart');
+  choropleth(chart_data, 'choropleth-chart', "{{ url_for('static', filename='counties.json') }}");
   createHistogram(chart_data, 'histogram-chart', '溫度');
 </script>
 {% endblock %}

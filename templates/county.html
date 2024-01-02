@@ -4,10 +4,13 @@
   {{ location }}
 {% endblock %}
 
-{% block content %}
-  {% with location=location, counties=counties %}
+{% block dropdown %}
+  {% with button_text=location, item_list=counties, base_url=base_url %}
     {% include 'dropdown.html' %}
   {% endwith %}
+{% endblock %}
+
+{% block content %}
   <div class="p-2 bg-white rounded-md w-fit">
       <div id="chart" class="max-w-[600px]"></div>
   </div>
@@ -15,6 +18,7 @@
 
 {% block script %}
   <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/dropdown.js') }}"></script>
   <script>
     const temp_forecast_data_json = '{{ temperature_forecast_data | tojson | safe }}'
     const temp_forecast_data = JSON.parse(temp_forecast_data_json.slice(1,-1))

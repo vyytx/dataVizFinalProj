@@ -15,11 +15,14 @@ def temperature():
 		chart_data = get_county_mean_temperature(),
 	)
 
-@app.route('/rainfall')
-def rainfall():
+@app.route('/rainfall/<string:timeRange>')
+def rainfall(timeRange):
 	return render_template(
 		'rainfall.html',
-		chart_data = get_county_mean_rainfall()
+		time_range = timeRange,
+		time_range_list = get_rainfall_time_range(),
+		base_url = '/rainfall',
+		chart_data = get_county_mean_rainfall(timeRange)
 	)
 
 @app.route('/county/<string:countyName>')
@@ -28,6 +31,7 @@ def county(countyName):
 		'county.html',
 		location = countyName,
 		counties = get_counties(),
+		base_url = '/county',
 		temperature_forecast_data = get_county_temperature_extremum(countyName)
 	)
 
