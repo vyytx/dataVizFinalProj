@@ -6,7 +6,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-	return redirect('/temperature')
+	return redirect('/home')
+
+@app.route('/home')
+def main_page():
+	return render_template(
+		'home.html',
+	)
 
 @app.route('/temperature')
 def temperature():
