@@ -3,6 +3,8 @@
  * @param {Array<{ z: number, location: string }>} chart_data 
  * @param {string} element 
  */
+
+
 const choropleth = (chart_data, element, geojson_path) => {
   const data = [{
     type: 'choroplethmapbox',
@@ -32,6 +34,42 @@ const choropleth = (chart_data, element, geojson_path) => {
       })
     })
 
+}
+
+const information_table = (table_data, element) => {
+  const data = [
+    {
+      type: 'table',
+      header: {
+        values: ['天氣', '溫度', '相對濕度', '氣壓', '風速(m/s)'],
+        align: ['left', 'left', 'left', 'left', 'left'],
+        line: { width: 1, color: 'black' },
+        fill: { color: 'grey' },
+        font: { family: "Arial", size: 12, color: "white" }
+      },
+      cells: {
+        values: [
+          [table_data['weather']],
+          [table_data['temperature']+'℃'],
+          [table_data['humidity']],
+          [table_data['pressure']],
+          [table_data['windspeed']],
+        ],
+        innerHeight: 70,
+        align: ['left', 'left'],
+        line: { color: "black", width: 1 },
+        font: { family: "Arial", size: 11, color: ["black"] }
+      }
+    }
+  ];
+
+  // 設定表格佈局
+  const layout = {
+    title: '當地即時氣候資料'
+  };
+
+  // 繪製表格
+  Plotly.newPlot(element, data, layout);
 }
 
 const temperature_forecast_scatter = (chart_data, element) => {
@@ -72,7 +110,7 @@ const temperature_forecast_scatter = (chart_data, element) => {
 // 創建兩種不同排序的直方圖
 const createHistogram = (chart_data, element, yaxix_title) => {
   // 將資料轉換為直方圖需要的格式
-  const sorted_chart_data = _.cloneDeep(chart_data); 
+  const sorted_chart_data = _.cloneDeep(chart_data);
   sorted_chart_data.sort((a, b) => b.z - a.z)// 按照氣溫排序
 
   // 創建直方圖的 trace，並使用色彩映射
