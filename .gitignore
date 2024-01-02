@@ -3,3 +3,4 @@ venv
 .vscode
 tailwind.config.js
 __pycache__
+data
