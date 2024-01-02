@@ -1,11 +1,13 @@
-{% macro menuItem(url, label, iconClass='') %}
+{% macro menuItem(url, label, icon='') %}
   {% set path_parts = request.path.split('/') %}
   {% set url_parts = url.split('/') %}
   <a href="{{ url }}" class="{{ 'bg-zinc-500' if path_parts[1] == url_parts[1] }} text-white text-center hover:bg-zinc-400 md:rounded-md w-full md:w-fit md:px-3 py-2 text-lg font-medium focus:ring-2 focus:ring-slate-300">
-    {% if iconClass %}
-      <i class="{{ iconClass }}"></i>
-    {% endif %}
-    {{ label }}
+    <span class="inline-flex items-center">
+      {% if icon %}
+        <i class="{{ icon }} text-sm mr-2"></i>
+      {% endif %}
+      <span>{{ label }}</span>
+    </span>
   </a>
 {% endmacro %}
 

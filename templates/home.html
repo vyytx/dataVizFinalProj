@@ -9,42 +9,15 @@
 {% endblock %}
 
 {% block content %}
-<header class="header">
-    <style>
-        h2 {
-				color: #ffffff; /* text color */
-				background-color: rgba(124, 122, 122, 0.092); /* background color */
-				padding: 20px; 
-				font-size: 36px;
-			}
-        h3 {
-            color: #ffffff; /* text color */
-            background-color: rgba(124, 122, 122, 0.092); /* background color */
-            padding: 20px; 
-            font-size: 18px;
-        }
-        footer{
-            color: #9c9898;
-        }
-    </style>
-    <h2 class="text-center" >
-        <i class="fa-solid fa-house-tsunami"></i>  即時天氣顯示系統
+  <div class="bg-zinc-500 text-white p-8 rounded-md mb-4">
+    <h2 class="text-4xl mb-8">
+      <i class="fa-solid fa-house-tsunami"></i>
+      <span>即時天氣顯示系統</span>
     </h2>
-    <h3 class="subtitle text-center">
-        資料視覺化期末專案  <i class="fa-regular fa-folder-open"></i>
+    <h3 class="text-xl text-right">
+        <span>資料視覺化期末專案</span>
+        <i class="fa-regular fa-folder-open"></i>
     </h3>
-</header>
-
-<main class="main-content">
-  <div class="mx-auto max-w-7xl py-12 sm:px-6 lg:px-8">
-    <div class="flex items-center mb-8 space-x-4">
-      {% block dropdown %}{% endblock %}
-    </div>
-    <!-- 其他內容 -->
   </div>
-</main>
-
-<footer class="footer">
-  <div class="student-info text-right">葛亭妤, 洪正豪, 曾翊承, 蔡承恩, 張信富</div>
-</footer>
+  <div class="text-zinc-300 text-center">第三組: 葛亭妤, 洪正豪, 曾翊承, 蔡承恩, 張信富</div>
 {% endblock %}
