@@ -5,10 +5,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="p-2 bg-white rounded-md w-fit">
-  <div class="charts-container">
-    <div id="choropleth-chart" class="chart-item"></div>
-    <div id="histogram-chart" class="chart-item"></div>
+<div class="flex flex-col items-baseline lg:flex-row space-y-8 lg:space-x-8">
+  <div class="p-2 bg-white rounded-md w-fit">
+    <div id="choropleth-chart"></div>
+  </div>
+  <div class="p-2 bg-white rounded-md w-fit">
+    <div id="histogram-chart"></div>
   </div>
 </div>
 {% endblock %}
@@ -20,6 +22,6 @@
   const chart_data = JSON.parse(chart_data_json.slice(1,-1));
 
   choropleth(chart_data, 'choropleth-chart');
-  createHistogram(chart_data, 'histogram-chart');
+  createHistogram(chart_data, 'histogram-chart', '溫度');
 </script>
 {% endblock %}
