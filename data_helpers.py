@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 from datetime import datetime, timedelta
+import statistics as st
 
 WEATHER_DATA_PATH = './data/weather.json'
 RAINFALL_DATA_PATH = './data/rainfall.json'
@@ -95,6 +96,64 @@ def get_county_temperature_extremum(location):
 
 
 			result_json = json.dumps(result, ensure_ascii=False)
+	except FileNotFoundError:
+		print('Weather data not found')
+		return
+	return result_json
+
+def get_county_information(location):
+	try:
+		with open(WEATHER_DATA_PATH, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			data_list = json_data['data']
+			temperature_list = []
+			humidity_list = []
+			pressure_list = []
+			windspeed_list = []
+			weather_list = []
+			for data in data_list:
+				if data['GeoInfo']['CountyName'] == location:
+					weather_list.append(data['WeatherElement']['Weather'])
+					if(data['WeatherElement']['AirTemperature']!= -99):
+						temperature_list.append(data['WeatherElement']['AirTemperature'])
+					if(data['WeatherElement']['RelativeHumidity']!= -99):
+						humidity_list.append(data['WeatherElement']['RelativeHumidity'])
+					if(data['WeatherElement']['AirPressure']!= -99):
+						pressure_list.append(data['WeatherElement']['AirPressure'])
+					if(data['WeatherElement']['WindSpeed']!= -99):
+						windspeed_list.append(data['WeatherElement']['WindSpeed'])
+			result = {
+				'weather': max(weather_list, key=weather_list.count),
+				'temperature': round(st.mean(temperature_list), 2),
+				'pressure': round(st.mean(pressure_list), 2),
+				'windspeed': round(st.mean(windspeed_list), 2),
+				'humidity': round(st.mean(humidity_list), 2),
+			}
+			result_json = json.dumps(result, ensure_ascii=False)
+	except FileNotFoundError:
+		print('Weather data not found')
+		return
+	return result_json
+
+def get_county_mean_windspeed():
+	try:
+		with open(WEATHER_DATA_PATH, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			df = pd.json_normalize(json_data, 'data')
+			result_list = (
+				df[df['WeatherElement.WindSpeed'] != -99]
+					.groupby('GeoInfo.CountyName')['WeatherElement.WindSpeed']
+					.mean()
+					.round(1)
+					.reset_index()
+					.rename(columns={
+						'GeoInfo.CountyName': 'location', 
+						'WeatherElement.WindSpeed': 'z'
+					})
+					.to_dict(orient='records')
+			)
+
+			result_json = json.dumps(result_list, ensure_ascii=False)
 	except FileNotFoundError:
 		print('Weather data not found')
 		return

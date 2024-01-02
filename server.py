@@ -15,6 +15,13 @@ def temperature():
 		chart_data = get_county_mean_temperature(),
 	)
 
+@app.route('/windspeed')
+def windspeed():
+	return render_template(
+		'windspeed.html',
+		chart_data = get_county_mean_windspeed(),
+	)
+
 @app.route('/rainfall/<string:timeRange>')
 def rainfall(timeRange):
 	return render_template(
@@ -32,7 +39,8 @@ def county(countyName):
 		location = countyName,
 		counties = get_counties(),
 		base_url = '/county',
-		temperature_forecast_data = get_county_temperature_extremum(countyName)
+		temperature_forecast_data = get_county_temperature_extremum(countyName),
+		county_information_data = get_county_information(countyName)
 	)
 
 
