@@ -1,11 +1,14 @@
 import json
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 import statistics as st
 
 WEATHER_DATA_PATH = './data/weather.json'
 RAINFALL_DATA_PATH = './data/rainfall.json'
 WEATHER_FORECAST_DATA_PATH = './data/weather-forecast.json'
+MONTHLY_AVERAGE_DATA_PATH = './data/monthly-average.json'
+MANNED_STATION_INFORMATION = './data/manned-station-information.json'
+UNMANNED_STATION_INFORMATION = './data/unmanned-station-information.json'
 
 def find_middle_time(time_str_1, time_str_2):
 	time_1 = datetime.strptime(time_str_1, "%Y-%m-%d %H:%M:%S")
@@ -110,10 +113,8 @@ def get_county_information(location):
 			humidity_list = []
 			pressure_list = []
 			windspeed_list = []
-			weather_list = []
 			for data in data_list:
 				if data['GeoInfo']['CountyName'] == location:
-					weather_list.append(data['WeatherElement']['Weather'])
 					if(data['WeatherElement']['AirTemperature']!= -99):
 						temperature_list.append(data['WeatherElement']['AirTemperature'])
 					if(data['WeatherElement']['RelativeHumidity']!= -99):
@@ -123,17 +124,16 @@ def get_county_information(location):
 					if(data['WeatherElement']['WindSpeed']!= -99):
 						windspeed_list.append(data['WeatherElement']['WindSpeed'])
 			result = {
-				'weather': max(weather_list, key=weather_list.count),
 				'temperature': round(st.mean(temperature_list), 2),
 				'pressure': round(st.mean(pressure_list), 2),
 				'windspeed': round(st.mean(windspeed_list), 2),
 				'humidity': round(st.mean(humidity_list), 2),
 			}
-			result_json = json.dumps(result, ensure_ascii=False)
+			print(result)
 	except FileNotFoundError:
 		print('Weather data not found')
 		return
-	return result_json
+	return result
 
 def get_county_mean_windspeed():
 	try:
@@ -162,3 +162,49 @@ def get_county_mean_windspeed():
 def get_counties():
 	counties = ['臺北市', '新北市', '桃園市', '臺中市', '臺南市', '高雄市', '新竹縣', '苗栗縣', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '屏東縣', '宜蘭縣', '花蓮縣', '臺東縣', '澎湖縣', '金門縣', '連江縣', '基隆市', '新竹市', '嘉義市']
 	return counties
+
+def get_station_information():
+	try:
+		with open(UNMANNED_STATION_INFORMATION, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			df = pd.json_normalize(json_data, 'data')
+			unmanned_station = df[['StationID', 'CountyName']]
+	except FileNotFoundError:
+		print('Unmanned station information data not found')
+		return
+	
+	try:
+		with open(MANNED_STATION_INFORMATION, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			df = pd.json_normalize(json_data, 'data')
+			manned_station = df[['StationID', 'CountyName']]	
+	except FileNotFoundError:
+		print('Manned station information data not found')
+		return
+	
+	result = pd.concat([unmanned_station, manned_station]).set_index('StationID')['CountyName'].to_dict()
+	return result
+
+def get_unnmanned_station_information():
+	try:
+		with open(UNMANNED_STATION_INFORMATION, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			df = pd.json_normalize(json_data, 'data')
+			unmanned_station = df[['StationID', 'CountyName']]
+			result = unmanned_station.set_index('StationID')['CountyName'].to_dict()
+	except FileNotFoundError:
+		print('Unmanned station information data not found')
+		return
+	return result
+
+def get_nmanned_station_information():
+	try:
+		with open(MANNED_STATION_INFORMATION, 'r', encoding='utf-8') as json_file:
+			json_data = json.load(json_file)
+			df = pd.json_normalize(json_data, 'data')
+			manned_station = df[['StationID', 'CountyName']]
+			result = manned_station.set_index('StationID')['CountyName'].to_dict()
+	except FileNotFoundError:
+		print('Unmanned station information data not found')
+		return
+	return result

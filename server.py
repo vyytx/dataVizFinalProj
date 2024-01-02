@@ -46,7 +46,7 @@ def county(countyName):
 		counties = get_counties(),
 		base_url = '/county',
 		temperature_forecast_data = get_county_temperature_extremum(countyName),
-		county_information_data = get_county_information(countyName)
+		information = get_county_information(countyName)
 	)
 
 

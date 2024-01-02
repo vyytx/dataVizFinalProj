@@ -14,7 +14,7 @@ const choropleth = (chart_data, element, geojson_path) => {
     z: unpack(chart_data, 'z'),
   }]
   const layout = {
-    width: 500,
+    width: 550,
     mapbox: {
       style: 'white-bg',
       center: { lon: 120.9738819, lat: 23.97565 },
@@ -36,42 +36,6 @@ const choropleth = (chart_data, element, geojson_path) => {
 
 }
 
-const information_table = (table_data, element) => {
-  const data = [
-    {
-      type: 'table',
-      header: {
-        values: ['天氣', '溫度', '相對濕度', '氣壓', '風速(m/s)'],
-        align: ['left', 'left', 'left', 'left', 'left'],
-        line: { width: 1, color: 'black' },
-        fill: { color: 'grey' },
-        font: { family: "Arial", size: 12, color: "white" }
-      },
-      cells: {
-        values: [
-          [table_data['weather']],
-          [table_data['temperature']+'℃'],
-          [table_data['humidity']],
-          [table_data['pressure']],
-          [table_data['windspeed']],
-        ],
-        innerHeight: 70,
-        align: ['left', 'left'],
-        line: { color: "black", width: 1 },
-        font: { family: "Arial", size: 11, color: ["black"] }
-      }
-    }
-  ];
-
-  // 設定表格佈局
-  const layout = {
-    title: '當地即時氣候資料'
-  };
-
-  // 繪製表格
-  Plotly.newPlot(element, data, layout);
-}
-
 const temperature_forecast_scatter = (chart_data, element) => {
   const data = [
     {
@@ -88,7 +52,7 @@ const temperature_forecast_scatter = (chart_data, element) => {
       name: '最高溫度',
       x: chart_data['x'],
       y: chart_data['MaxT'],
-      hovertemplate: '%{y}°C'
+      hovertemplate: '%{y}°C',
     },
   ]
 
@@ -96,7 +60,8 @@ const temperature_forecast_scatter = (chart_data, element) => {
     title: '未來 36 小時最高和最低溫度',
     xaxis: {
       tickmode: 'array',
-      tickvals: chart_data['ticks']
+      tickvals: chart_data['ticks'],
+      range: [chart_data['ticks'][0], chart_data['ticks'][chart_data['ticks'].length - 1]]
     },
     margin: { t: 100 },
   };
