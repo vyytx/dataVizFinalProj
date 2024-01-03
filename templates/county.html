@@ -2,7 +2,7 @@
 
 {% block title %}
   {{ location }}
-  <small class="text-xs">(部分縣市無歷史資料)</small>
+  <small id='history-data-avaliable-message' class="text-xs hidden">(無歷史資料)</small>
 {% endblock %}
 
 {% block dropdown %}
@@ -64,6 +64,10 @@
 <script>
   const temp_forecast_data_json = '{{ temperature_forecast_data | tojson | safe }}'
   const temp_forecast_data = JSON.parse(temp_forecast_data_json.slice(1, -1))
-  temperature_scatter(temp_forecast_data, 'chart')
+  const temp_history_data_json = '{{ temperature_history_data | tojson | safe }}'
+  const temp_history_data_str = temp_history_data_json.slice(1, -1)
+  const temp_history_data = temp_history_data_str ? JSON.parse(temp_history_data_str) : null
+  if (!temp_history_data) document.getElementById('history-data-avaliable-message').classList.toggle('hidden')
+  temperature_scatter(temp_forecast_data, temp_history_data, 'chart')
 </script>
 {% endblock %}

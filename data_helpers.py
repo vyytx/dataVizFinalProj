@@ -265,7 +265,7 @@ def get_manned_station_information():
 		return
 	return result
 
-def get_county_history_temperature():
+def get_county_history_temperature(location):
 	station_dict = get_manned_station_information()
 	try:
 		with open(WEATHER_HISTORY_DATA_PATH, 'r', encoding='utf-8') as json_file:
@@ -298,15 +298,16 @@ def get_county_history_temperature():
 				.round(1)
 				.reset_index()
 			)
-			result_grouped = (
+			result_data_combined = (
 				result_avg.groupby('countyName')[['date', 'temperature']]
 					.apply(lambda x: x.to_dict(orient='records'))
 					.reset_index(name='data')
-					.to_dict(orient='records')
 			)
-			result_json = json.dumps(result_grouped, ensure_ascii=False)
-			print(result_json)
-
+			result_dict = result_data_combined.set_index('countyName')['data'].to_dict()
+			county_history_data = result_dict.get(location, [])
+			result_json = ''
+			if county_history_data:
+				result_json = json.dumps(county_history_data, ensure_ascii=False)
 	except FileNotFoundError:
 		print('Weather history data not found')
 		return

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, redirect
+from flask import Flask, render_template, redirect
 from fetch import fetch_all
 from data_helpers import *
 
@@ -46,6 +46,7 @@ def county(countyName):
 		counties = get_counties(),
 		base_url = '/county',
 		temperature_forecast_data = get_county_temperature_extremum(countyName),
+		temperature_history_data = get_county_history_temperature(countyName),
 		information = get_county_information(countyName)
 	)
 
