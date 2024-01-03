@@ -115,7 +115,7 @@ def get_county_temperature_extremum(location):
 							for time in element['time']:
 								minT_list.append(time['parameter']['parameterName'])
 								x_list.append(find_middle_time(time['startTime'], time['endTime']))
-								range_list.append(f'{time_format(time['startTime'])} ~ {time_format(time['endTime'])}')		
+								range_list.append(f'{time_format(time["startTime"])} ~ {time_format(time["endTime"])}')		
 						if element['elementName'] == 'MaxT':
 							for time in element['time']:
 								maxT_list.append(time['parameter']['parameterName'])
