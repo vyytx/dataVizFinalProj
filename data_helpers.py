@@ -204,10 +204,10 @@ def get_county_information(location):
 					if(data['WeatherElement']['WindSpeed']!= -99):
 						windspeed_list.append(data['WeatherElement']['WindSpeed'])
 			result = {
-				'temperature': round(st.mean(temperature_list), 2),
-				'pressure': round(st.mean(pressure_list), 2),
-				'windspeed': round(st.mean(windspeed_list), 2),
-				'humidity': round(st.mean(humidity_list), 2),
+				'temperature': round(st.mean(temperature_list), 2) if temperature_list else 'X',
+				'pressure': round(st.mean(pressure_list), 2) if pressure_list else 'X',
+				'windspeed': round(st.mean(windspeed_list), 2) if windspeed_list else 'X',
+				'humidity': round(st.mean(humidity_list), 2) if humidity_list else 'X',
 			}
 			print(result)
 	except FileNotFoundError:
