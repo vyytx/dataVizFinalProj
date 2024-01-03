@@ -13,10 +13,14 @@ UNMANNED_STATION_INFORMATION = './data/unmanned-station-information.json'
 OBS_RECORD_30DAYS = './data/obs-record-30days.json'
 
 def find_middle_time(time_str_1, time_str_2):
-	time_1 = datetime.strptime(time_str_1, "%Y-%m-%d %H:%M:%S")
-	time_2 = datetime.strptime(time_str_2, "%Y-%m-%d %H:%M:%S")
+	time_1 = datetime.strptime(time_str_1, "%Y-%m-%dT%H:%M:%S%z")
+	time_2 = datetime.strptime(time_str_2, "%Y-%m-%dT%H:%M:%S%z")
 	result = time_1 + (time_2 - time_1)/2 
 	return result.strftime("%Y-%m-%d %H:%M:%S")
+
+def time_format(time_str):
+	result = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S%z")
+	return result.strftime("%m/%d %H:%M")
 
 
 def get_county_mean_rainfall(time_range):
@@ -105,69 +109,66 @@ def get_county_temperature_extremum(location):
 					minT_list = []
 					maxT_list = []
 					x_list = []
-					tick_list = []
+					range_list = []
 					for element in data['weatherElement']:
 						if element['elementName'] == 'MinT':
-							for i, time in enumerate(element['time']):
+							for time in element['time']:
 								minT_list.append(time['parameter']['parameterName'])
 								x_list.append(find_middle_time(time['startTime'], time['endTime']))
-								tick_list.append(time['startTime'])
-								if i == 2:
-									tick_list.append(time['endTime'])
+								range_list.append(f'{time_format(time['startTime'])} ~ {time_format(time['endTime'])}')		
 						if element['elementName'] == 'MaxT':
 							for time in element['time']:
 								maxT_list.append(time['parameter']['parameterName'])
+						
 					result = {
 						'MinT': minT_list,
 						'MaxT': maxT_list,
 						'x': x_list,
-						'ticks': tick_list
+						'range': range_list
 					}
-
-
 			result_json = json.dumps(result, ensure_ascii=False)
 	except FileNotFoundError:
 		print('Weather data not found')
 		return
 	return result_json
 
-def get_county_temperature_history(location):
-	try:
-		with open(WEATHER_HISTORY_DATA_PATH, 'r', encoding='utf-8') as json_file:
-			json_data = json.load(json_file)
-			data_list = json_data['data']
-			daily_list_list = []
-			for data in data_list:
-				county = get_station_county(data['station']['StationID'])
-				if county == location:
-					daily_list_list.append(data['stationObsStatistics']['AirTemperature']['daily'])
+# def get_county_temperature_history(location):
+# 	try:
+# 		with open(WEATHER_HISTORY_DATA_PATH, 'r', encoding='utf-8') as json_file:
+# 			json_data = json.load(json_file)
+# 			data_list = json_data['data']
+# 			daily_list_list = []
+# 			for data in data_list:
+# 				county = get_station_county(data['station']['StationID'])
+# 				if county == location:
+# 					daily_list_list.append(data['stationObsStatistics']['AirTemperature']['daily'])
 
-			organized = dict()
-			if len(daily_list_list):
-				for daily_list in daily_list_list:
-					for day in daily_list[-7:]:
-						organized.setdefault(day['Date'], {
-							'Date': day['Date'],
-							'Maximum': 0,
-							'Minimum': 0
-						})
-						organized[day['Date']]['Maximum'] += float(day['Maximum'])
-						organized[day['Date']]['Minimum'] += float(day['Minimum'])
-				for day in daily_list_list[0][-7:]:
-					organized[day['Date']]['Maximum'] /= len(daily_list_list)
-					organized[day['Date']]['Minimum'] /= len(daily_list_list)
+# 			organized = dict()
+# 			if len(daily_list_list):
+# 				for daily_list in daily_list_list:
+# 					for day in daily_list[-7:]:
+# 						organized.setdefault(day['Date'], {
+# 							'Date': day['Date'],
+# 							'Maximum': 0,
+# 							'Minimum': 0
+# 						})
+# 						organized[day['Date']]['Maximum'] += float(day['Maximum'])
+# 						organized[day['Date']]['Minimum'] += float(day['Minimum'])
+# 				for day in daily_list_list[0][-7:]:
+# 					organized[day['Date']]['Maximum'] /= len(daily_list_list)
+# 					organized[day['Date']]['Minimum'] /= len(daily_list_list)
 			
-			result_dict = {
-				"x": [date+" 00:00:00" for date in organized],
-				"MaxT": [day['Maximum'] for day in organized.values()],
-				"MinT": [day['Minimum'] for day in organized.values()],
-			}
+# 			result_dict = {
+# 				"x": [date+" 00:00:00" for date in organized],
+# 				"MaxT": [day['Maximum'] for day in organized.values()],
+# 				"MinT": [day['Minimum'] for day in organized.values()],
+# 			}
 
-			result_json = json.dumps(result_dict, ensure_ascii=False)
-	except FileNotFoundError:
-		print('Weather data not found')
-		return
-	return result_json
+# 			result_json = json.dumps(result_dict, ensure_ascii=False)
+# 	except FileNotFoundError:
+# 		print('Weather data not found')
+# 		return
+# 	return result_json
 
 def get_station_county(stationID):
 	try:
@@ -264,10 +265,10 @@ def get_manned_station_information():
 		return
 	return result
 
-def get_county_mean_temperature_in_past_30days():
+def get_county_history_temperature():
 	station_dict = get_manned_station_information()
 	try:
-		with open(OBS_RECORD_30DAYS, 'r', encoding='utf-8') as json_file:
+		with open(WEATHER_HISTORY_DATA_PATH, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			station_list = json_data['data']
 			result_list = []
@@ -307,6 +308,6 @@ def get_county_mean_temperature_in_past_30days():
 			print(result_json)
 
 	except FileNotFoundError:
-		print('30 days data not found')
+		print('Weather history data not found')
 		return
 	return result_json

@@ -25,7 +25,6 @@ def fetch_all():
 	fetch_weather_history()
 	fetch_manned_station_information()
 	fetch_unmanned_station_information()
-	fetch_obs_record_30days() # Need some time to fetch
 
 def fetch_weather():
 	# Check if the data is already fetched today
@@ -54,7 +53,6 @@ def fetch_weather():
 	else:
 		print('Error when requesting weather data')
 
-
 def fetch_rainfall():
 	# Check if the data is already fetched today
 	try:
@@ -82,32 +80,6 @@ def fetch_rainfall():
 	else:
 		print('Error when requesting rainfall data')
 
-def fetch_weather_history():
-	try:
-		with open(WEATHER_HISTORY_DATA_PATH, 'r', encoding='utf-8') as json_file:
-			json_data = json.load(json_file)
-			if json_data['date'] == datetime.now().strftime(DATE_FORMAT):
-				print('Weather forecast data is up to date')
-				return
-	except FileNotFoundError:
-		pass
-
-	# Fetch data from API
-	url = 'https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/C-B0024-001?downloadType=WEB&format=JSON'
-	headers = {'Authorization': os.getenv('API_KEY')}
-	res = req.get(url, headers=headers)
-
-	if res.status_code == 200: # If the request is successful
-		data = res.json()
-		json_data = {
-			'date': datetime.now().strftime(DATE_FORMAT),
-			'data': data['cwaopendata']['resources']['resource']['data']['surfaceObs']['location']
-		}
-		with open(WEATHER_HISTORY_DATA_PATH, 'w', encoding='utf-8') as json_file:
-			json.dump(json_data, json_file, indent=2)
-	else:
-		print('Error when requesting weather history data')
-
 def fetch_weather_forecast():
 	try:
 		with open(WEATHER_FORECAST_DATA_PATH, 'r', encoding='utf-8') as json_file:
@@ -119,7 +91,7 @@ def fetch_weather_forecast():
 		pass
 	
 	# Fetch data from API
-	url = 'https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001'
+	url = 'https://opendata.cwa.gov.tw/fileapi/v1/opendataapi/F-C0032-005?downloadType=WEB&format=JSON'
 	headers = {'Authorization': os.getenv('API_KEY')}
 	res = req.get(url, headers=headers)
 
@@ -127,7 +99,7 @@ def fetch_weather_forecast():
 		data = res.json()
 		json_data = {
 			'date': datetime.now().strftime(DATE_FORMAT),
-			'data': data['records']['location']
+			'data': data['cwaopendata']['dataset']['location']
 		}
 		with open(WEATHER_FORECAST_DATA_PATH, 'w', encoding='utf-8') as json_file:
 			json.dump(json_data, json_file, indent=2)
@@ -186,12 +158,12 @@ def fetch_unmanned_station_information():
 	else:
 		print('Error when requesting unmanned station information data')
 
-def fetch_obs_record_30days():
+def fetch_weather_history():
 	try:
-		with open(OBS_RECORD_30DAYS, 'r', encoding='utf-8') as json_file:
+		with open(WEATHER_HISTORY_DATA_PATH, 'r', encoding='utf-8') as json_file:
 			json_data = json.load(json_file)
 			if json_data['date'] == datetime.now().strftime(DATE_FORMAT):
-				print('30 days data is already up to date')
+				print('Weather history data is already up to date')
 				return
 	except FileNotFoundError:
 		pass
@@ -206,7 +178,9 @@ def fetch_obs_record_30days():
 			'date': datetime.now().strftime(DATE_FORMAT),
 			'data': data['cwaopendata']['resources']['resource']['data']['surfaceObs']['location']
 		}
-		with open(OBS_RECORD_30DAYS, 'w', encoding='utf-8') as json_file:
+		with open(WEATHER_HISTORY_DATA_PATH, 'w', encoding='utf-8') as json_file:
 			json.dump(json_data, json_file, indent=2)
 	else:
-		print('Error when requesting 30days data')
+		print('Error when requesting weather history data')
+
+fetch_weather_forecast()
