@@ -161,8 +161,10 @@ const createHistogram = (chart_data, element, yaxix_title) => {
     updatemenus: [
       {
         y: 1.2,
-        x: 0.3,
+        x: 0.1,
         yanchor: 'top',
+        type: 'buttons',
+        direction: 'right',
         buttons: [
           {
             method: 'restyle',
